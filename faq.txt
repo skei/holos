@@ -1,0 +1,16 @@
+[todo]
+
+what
+    .. is this?
+who
+    .. did this?
+why
+    .. not juce, iplug, dpf, etc?
+    .. "linux first"?
+    .. header-only?
+    .. no dependencies?
+    .. lockfree?
+    .. no ai?
+how
+    .. to make your own plugin
+    .. to compile
