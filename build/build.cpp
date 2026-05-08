@@ -10,14 +10,14 @@
 const clap_plugin_descriptor_t myDescriptor =
 {
     .clap_version = CLAP_VERSION,
-    .id           = "me/myPlugin",
-    .name         = "my plugin",
+    .id           = "me/my_plugin",
+    .name         = "my_plugin",
     .vendor       = "me",
-    .url          = "https://my-website.com/my-lugin",
-    .manual_url   = "https://my-website.com/my-lugin/manual.pdf",
-    .support_url  = "https://my-website.com/support",
+    .url          = "https://my_website.com/my_plugin",
+    .manual_url   = "https://my_website.com/my_plugin/manual.pdf",
+    .support_url  = "https://my_website.com/support",
     .version      = "0.0.0",
-    .description  = "my plugin",
+    .description  = "my_plugin description here..",
     .features     = (const char* [])
     {
         CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
