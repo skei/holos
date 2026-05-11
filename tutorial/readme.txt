@@ -79,8 +79,7 @@ gui
     (timer-support)
 
 ----------------------------------------------------------------------
-notes, issues, bugs
-(wuestions to clap maintainers)
+notes, issues, bugs, questions
 ----------------------------------------------------------------------
 
 * if clap_entry.get_factory returns null, clap_entry.deinit is not called
