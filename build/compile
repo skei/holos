@@ -1,0 +1,213 @@
+#!/bin/bash
+
+#----------------------------------------------------------------------
+#
+# defaults
+#
+#----------------------------------------------------------------------
+
+CC="g++"
+
+INPUT="../buid/build.cpp"
+OUTPUT="../bin/build.clap"
+
+DEBUG=false
+LIBRARY=false
+#LINUX=true
+#SANITIZE=false
+#VERBOSE=false
+
+OS="LINUX"
+FORMAT="CLAP"
+GUI="NATIVE"
+
+#----- flags -----
+
+FLAGS=""
+FLAGS+=" -std=gnu++17"
+FLAGS+=" -fno-exceptions"
+FLAGS+=" -Wall" # -Wfatal-errors"
+FLAGS+=" -Wl,--as-needed"
+
+#FLAGS=" -static"
+#FLAGS+=" -Wl,-Bsymbolic"
+#FLAGS+=" -pthread"
+#FLAGS+=" -static-libgcc"
+#FLAGS+=" -static-libstdc++"
+
+#----- inc -----
+
+INC=""
+INC+=" -I../src"
+
+#----- lib -----
+
+PRELIB=""
+
+LIB=""
+LIB+=" -lm"
+#LIB+=" -ldl -lrt"
+
+#----- arg -----
+
+ADDITIONAL=""
+
+#----------------------------------------------------------------------
+#
+# print help
+#
+#----------------------------------------------------------------------
+
+function print_help_and_exit {
+    echo "usage: ./compile <options>"
+    echo ""
+    echo "  -i <path>       input file name/path"
+    echo "  -o <path>       output file name/path"
+    echo "  -f <format>     clap, vst3, exe"
+    echo "  -d              debug"
+    echo "  -h, -?          help"
+    exit 1
+}
+
+#----------------------------------------------------------------------
+#
+# parse command line
+#
+#----------------------------------------------------------------------
+
+if [ "$#" -eq 0 ]; then
+    print_help_and_exit
+fi
+
+while getopts i:o:f:dh? arg
+do
+    case $arg in
+        i)      INPUT=$OPTARG;;
+        o)      OUTPUT=$OPTARG;;
+        f)      FORMAT=${OPTARG^^};;
+        d)      DEBUG=true;;
+        h|?)    print_help_and_exit;;
+        *)      exit 1;;
+    esac
+done
+
+#------------------------------
+# input
+#------------------------------
+
+INPUT_FILE=${INPUT##*/}
+INPUT_BASE=${INPUT_FILE%%.*}
+INPUT_EXT=${INPUT_FILE##*.}
+INPUT_DIR=${INPUT%$INPUT_FILE}
+
+#------------------------------
+# output
+#------------------------------
+
+OUTPUT_FILE=${OUTPUT##*/}
+OUTPUT_BASE=${OUTPUT_FILE%%.*}
+OUTPUT_EXT=${OUTPUT_FILE##*.}
+OUTPUT_DIR=${OUTPUT%$OUTPUT_FILE}
+
+#------------------------------
+# os (linux)
+#------------------------------
+
+if [[ "$OS" == *"LINUX"* ]]; then
+    #LINUX=true
+    #FLAGS+=" -DHOLOS_LINUX"
+    CC="g++"
+    FLAGS+=" -pthread"
+    LIB+=" -ldl -lrt"
+fi
+
+#------------------------------
+# format
+#------------------------------
+
+if [[ "$FORMAT" == *"CLAP"* ]]; then
+    LIBRARY=true
+    FLAGS+=" -DHOLOS_PLUGIN_CLAP"
+fi
+
+#if [[ "$FORMAT" == *"VST3"* ]]; then
+#    LIBRARY=true
+#    FLAGS+=" -DHOLOS_PLUGIN_VST3"
+#    INC+=" -I../src/extern/vst3"
+#fi
+
+if [[ "$FORMAT" == *"EXE"* ]]; then
+    LIBRARY=false
+    FLAGS+=" -DHOLOS_PLUGIN_EXE"
+fi
+
+#------------------------------
+# library (.so/.dll)
+#------------------------------
+
+if $LIBRARY
+then
+    FLAGS+=" -DHOLOS_LIBRARY"
+    FLAGS+=" -shared"
+    FLAGS+=" -fPIC"
+fi
+
+#------------------------------
+# gui
+#------------------------------
+
+#----- x11 -----
+
+LIB+=" -lX11 -lX11-xcb"
+LIB+=" -lxcb -lxcb-util -lxcb-image -lxcb-cursor -lxcb-keysyms"
+LIB+=" -lxkbcommon"
+
+#----- glx -----
+
+LIB+=" -lGL"
+LIB+=" -lGLX"
+
+#------------------------------
+# debug
+#------------------------------
+
+if $DEBUG
+then
+    FLAGS+=" -DHOLOS_DEBUG"
+    FLAGS+=" -g"
+    FLAGS+=" -rdynamic"
+    #FLAGS+=" -export-dynamic"
+    #FLAGS+=" -Wl,-Bsymbolic"
+else
+    FLAGS+=" -DNDEBUG"
+    FLAGS+=" -O3"
+    FLAGS+=" -ffast-math"
+    FLAGS+=" -s"
+    #FLAGS+=" -flto"
+fi
+
+#------------------------------
+# sanitize
+#------------------------------
+
+#if $SANITIZE
+#then
+#    FLAGS+=" -DHOLOS_SANITIZE"
+#    #PRELIB+=" -lasan"
+#    FLAGS+=" -fsanitize=leak"
+#    #FLAGS+=" -fsanitize=address"
+#    FLAGS+=" -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+#fi
+
+#----------------------------------------------------------------------
+#
+# compile
+#
+#----------------------------------------------------------------------
+
+#if $VERBOSE; then
+#    echo $CC $INPUT -o $OUTPUT $FLAGS $INC $PRELIB $LIB $ADDITIONAL
+#fi  
+
+$CC $INPUT -o $OUTPUT $FLAGS $INC $PRELIB $LIB $ADDITIONAL
+

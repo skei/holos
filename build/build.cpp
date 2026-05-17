@@ -1,3 +1,38 @@
+// compile -i build.cpp -o ../bin/buid.exe -f exe
+// nc -U -l -k /tmp/holos.socket
+
+#include "holos.h"
+
+int main()
+{
+    HOLOS_DPrint("\n");
+    HOLOS_Print("hello world!\n");
+    HOLOS_DPrint("hello world!\n");
+    HOLOS_DPrint("\n");
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+
+#if 0
 
 #include "holos.h"
 #include "plugin/holos_plugin.h"
@@ -96,3 +131,5 @@ HOLOS_Plugin* HOLOS_CreatePlugin(const clap_host_t *host, const char *plugin_id)
     }
     return nullptr;
 }
+
+#endif // 0
